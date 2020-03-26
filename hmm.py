@@ -11,7 +11,7 @@ from featuresProcessing import normalize_coordinates, loop_over_static
 
 # Class to handle all HMM related processing
 class HMMTrainer(object):
-    def __init__(self, model_name='GaussianHMM', n_components=4, cov_type='diag', n_iter=1000):
+    def __init__(self, model_name='GaussianHMM', n_components=6, cov_type='full', n_iter=2):
         self.model_name = model_name
         self.n_components = n_components
         self.cov_type = cov_type
@@ -59,49 +59,55 @@ if __name__=='__main__':
     for key in keys:
         if key not in keys_train:
             keys_test.append(key)
-   
+    results={}
     ################################################ USING STATIC ########################################
-
-    hmm_models = []
-
-    ########## Training ################3   
-    t_c = 0
-    for key in keys_train:
-        t_c+=1 
-        X = loop_over_static(normalized,key)          
-        hmm_trainer = HMMTrainer()
-        print("\n Entrenando... ")
-        print(str(t_c) + " de " + str(len(keys_train)) )
-
-        hmm_trainer.train(X)
-        hmm_models.append((hmm_trainer, key))
-        hmm_trainer = None
-                        
-    ########### Testing #################
-    test_count = 0
-    for key in keys_test:
-        X = loop_over_static(normalized,key)
-        max_score = [float("-inf")]
-        output_label = None
-        model_count = 1
-        for model in hmm_models:
-            hmm_model, label = model
-            score = hmm_model.get_score(X)
-            model_count+=1
-    #        print(key,label,score)
-            if score > max_score:
-                max_score = score
-                output_label = label
-    
-        key = key.split('_')
-        output = output_label.split('_')
-        if(key[0] == output[0]):
-            test_count+=1
-#            print( "\nTrue:", key[0])
-#            print("Predicted:", output[0])
-#            print('-'*50)
-    
-    result_t = test_count/len(keys_test)
-    print("Accuracy: " + str(result_t))
+    for i in range (2,11):
+        for j in range(1,15):
+            try:
+                hmm_models = []
+            
+                ########## Training ################3   
+                t_c = 0
+                for key in keys_train:
+                    t_c+=1 
+                    X = loop_over_static(normalized,key)          
+                    hmm_trainer = HMMTrainer(n_components=i, n_iter=j)
+#                    print("\n Entrenando... ")
+#                    print(str(t_c) + " de " + str(len(keys_train)) )
+                
+                    hmm_trainer.train(X)
+                    hmm_models.append((hmm_trainer, key))
+                    hmm_trainer = None
+                                    
+                ########### Testing #################
+                test_count = 0
+                for key in keys_test:
+                    X = loop_over_static(normalized,key)
+                    max_score = [float("-inf")]
+                    output_label = None
+                    model_count = 1
+                    for model in hmm_models:
+                        hmm_model, label = model
+                        score = hmm_model.get_score(X)
+                        model_count+=1
+                #        print(key,label,score)
+                        if score > max_score:
+                            max_score = score
+                            output_label = label
+                
+                    key = key.split('_')
+                    output = output_label.split('_')
+                    if(key[0] == output[0]):
+                        test_count+=1
+#                        print( "\nTrue:", key[0])
+#                        print("Predicted:", output[0])
+#                        print('-'*50)
+#                
+                result_t = test_count/len(keys_test)
+                print("Accuracy: " + str(result_t*100) + " %")
+                results[str((i,j))] = result_t*100
+            except:
+                print("ERROR for: " + str((i,j)))
+                continue
 
        
