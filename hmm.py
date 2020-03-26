@@ -11,7 +11,7 @@ from featuresProcessing import normalize_coordinates, loop_over_static
 
 # Class to handle all HMM related processing
 class HMMTrainer(object):
-    def __init__(self, model_name='GaussianHMM', n_components=16, cov_type='diag', n_iter=1000):
+    def __init__(self, model_name='GaussianHMM', n_components=4, cov_type='diag', n_iter=1000):
         self.model_name = model_name
         self.n_components = n_components
         self.cov_type = cov_type
@@ -78,6 +78,7 @@ if __name__=='__main__':
         hmm_trainer = None
                         
     ########### Testing #################
+    test_count = 0
     for key in keys_test:
         X = loop_over_static(normalized,key)
         max_score = [float("-inf")]
@@ -95,11 +96,12 @@ if __name__=='__main__':
         key = key.split('_')
         output = output_label.split('_')
         if(key[0] == output[0]):
+            test_count+=1
 #            print( "\nTrue:", key[0])
 #            print("Predicted:", output[0])
 #            print('-'*50)
     
     result_t = test_count/len(keys_test)
-    print(result_t)
+    print("Accuracy: " + str(result_t))
 
        
