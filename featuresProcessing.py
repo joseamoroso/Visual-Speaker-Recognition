@@ -8,6 +8,7 @@ Created on Tue Feb 18 10:18:29 2020
 import json 
 import math
 import matplotlib.pyplot as plt
+import numpy as np
 
 NUM_CORD = 12
 
@@ -63,7 +64,7 @@ def normalize_coordinates(coord_list):
                 xi = coord[0]
                 yi = coord[1]
                 xi_prime = (((xi - x_c) * math.cos(alpha)) + ((yi - y_c)* math.sin(alpha))) / s
-                yi_prime = ((-(xi - x_c) * math.sin(alpha)) + ((yi - y_c)* math.cos(alpha))) / s
+                yi_prime = -(((-(xi - x_c) * math.sin(alpha)) + ((yi - y_c)* math.cos(alpha))) / s)
                 normalize_coord[speaker][speaker_frame].append((xi_prime,yi_prime))
     return normalize_coord
 
@@ -85,29 +86,39 @@ def derivate (video_frames):
             y_derivate =  (y_next - y_act) / 2
             f_temp_shape["f_temp_shape"+str(i)].append((x_derivate,y_derivate))
     return f_temp_shape
+
+def loop_over_static(norm_dict,key):
+    frame_features = norm_dict[key] #Lista de diccionarios de frames
+    f_temp_shape_dict = list(frame_features)    
+    X = np.array([])
+    for f_temp_shape_values in f_temp_shape_dict:
+        if len(X) == 0:
+            X = frame_features[f_temp_shape_values]
+        else:
+            X = np.append(X,frame_features[f_temp_shape_values],axis=0)
+
+    return X
         
     
     
 
-f=open("AV_lips_coordinates_v0.txt", "r")    
-contents = json.loads(f.read())
-f.close()
-
-#diccionario con fshape para cada frame de todos los videos
-normalized = normalize_coordinates(contents)
-
-example = normalized['p1_w1_01']
-exa1= list(example)
-
-f_shape = derivate(example)
 
 
 
 
 
-#Prueba
-#example = normalized['p3_w1_00']['p3_w1_00_3']
-#example2 =  contents['p1_w1_00']['p1_w1_00_3']
+
+
+############################################################################
+    
+##Prueba
+#f=open("AV_lips_coordinates_v0.txt", "r")    
+#contents = json.loads(f.read())
+#f.close()
+#
+##diccionario con fshape para cada frame de todos los videos
+#normalized = normalize_coordinates(contents)
+#example = normalized['S001_R01_p0']['S001_R01_p0_10']
 #
 #x = []
 #y = []
@@ -115,6 +126,10 @@ f_shape = derivate(example)
 #for coor in example:
 #    x.append(coor[0])
 #    y.append(coor[1])
+#    
+#x.append(x[0])
+#y.append(y[0])
+#
 #    
 #plt.plot(x, y)
 #plt.show()
