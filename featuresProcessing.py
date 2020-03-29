@@ -68,24 +68,27 @@ def normalize_coordinates(coord_list):
                 normalize_coord[speaker][speaker_frame].append((xi_prime,yi_prime))
     return normalize_coord
 
+def derivate (coord_list):
+    derivated_coord = {}
+    for speaker_utter in coord_list:
+        derivated_coord[speaker_utter]={}
+        frames_keys = list(coord_list[speaker_utter].keys())
+        utter_lenght = len(coord_list[speaker_utter])
+        for frame in range(0,utter_lenght-1):    
+            derivated_coord[speaker_utter][frames_keys[frame]+"_der"]=[]
+            for coord in range(0,len(coord_list[speaker_utter][frames_keys[frame]])):
+                x_actual = coord_list[speaker_utter][frames_keys[frame]][coord][0]
+                x_next = coord_list[speaker_utter][frames_keys[frame+1]][coord][0]
+                y_actual = coord_list[speaker_utter][frames_keys[frame]][coord][1]
+                y_next = coord_list[speaker_utter][frames_keys[frame+1]][coord][1]
+                x_derivate = (x_next-x_actual)/2
+                y_derivate = (y_next-y_actual)/2
+                derivated_coord[speaker_utter][frames_keys[frame]+"_der"].append([x_derivate,y_derivate])
+                
+    return derivated_coord
 
 
-#Recibe un video y calcula derivadas entre las coordenadas de frames consecutivos
-def derivate (video_frames):
-    f_temp_shape = {}
-    num_frames = len(video_frames)
-    frames_keys = list(video_frames.keys())
-    for i in range(num_frames-1):
-        f_temp_shape["f_temp_shape"+str(i)]=[]
-        for coor in range(NUM_CORD):
-            x_act = video_frames[frames_keys[i]][coor][0]
-            x_next = video_frames[frames_keys[i+1]][coor][0]
-            y_act = video_frames[frames_keys[i]][coor][1]
-            y_next = video_frames[frames_keys[i+1]][coor][1]
-            x_derivate = (x_next - x_act) / 2
-            y_derivate =  (y_next - y_act) / 2
-            f_temp_shape["f_temp_shape"+str(i)].append((x_derivate,y_derivate))
-    return f_temp_shape
+
 
 def loop_over_static(norm_dict,key):
     frame_features = norm_dict[key] #Lista de diccionarios de frames
@@ -113,14 +116,16 @@ def loop_over_static(norm_dict,key):
 ############################################################################
     
 #Prueba
-f=open("AV_lips_coordinates_v0.txt", "r")    
-contents = json.loads(f.read())
-f.close()
+# f=open("AV_lips_coordinates_v0.txt", "r")    
+# contents = json.loads(f.read())
+# f.close()
 
-#diccionario con fshape para cada frame de todos los videos
-normalized = normalize_coordinates(contents)
-example = normalized['S001_R01_p0']['S001_R01_p0_10']
-example_X = loop_over_static(normalized,'S001_R01_p0')
+# #diccionario con fshape para cada frame de todos los videos
+# normalized = normalize_coordinates(contents)
+# derivated = derivate(normalized)
+
+# example = normalized['S001_R01_p0']['S001_R01_p0_10']
+# example_X = loop_over_static(normalized,'S001_R01_p0')
 
 
 
