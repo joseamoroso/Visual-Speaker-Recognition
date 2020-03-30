@@ -22,7 +22,7 @@ if __name__ == "__main__" :
     datasetMode = "Normal"
     
     # extracted_frames_path = "LipsFrames\\"
-    videos_path = "AVSegmentedDataset\Digits\\" +datasetMode +"\*.mp4" 
+    videos_path = r"AVSegmentedDataset\Digits\\" +datasetMode +"\*.mp4" 
 
     videos = glob.glob(videos_path)
     # Read the video from specified path 
@@ -62,7 +62,8 @@ if __name__ == "__main__" :
         # frame 
         currentframe = 0
         c = 0
-          
+        print(str(counter) + ' of ' + str(len(videos)) + '\n')
+
         while(True): 
             # reading from frame 
             ret,frame = cam.read() 
@@ -84,7 +85,6 @@ if __name__ == "__main__" :
                 roi,shape = lips_segm_HOG(f_image,predictor)
                 speakerNameDict[name_v[0]][name_v[0]+'_' +str(currentframe)]=shape.tolist()
                 # print ('Creating...' + name)
-                print(str(counter) + ' of ' + str(len(videos)) + '\n')
                 
                 
                 # cv2.imwrite(name, roi)
