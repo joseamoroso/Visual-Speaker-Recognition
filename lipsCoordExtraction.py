@@ -21,7 +21,7 @@ if __name__ == "__main__" :
     datasetMode = ["Normal","Silent","Whispered"]
     for mode in datasetMode:
 
-        text_filename = "LipsCoordinates_"+ mode +"_12coor_Normal.txt"
+        text_filename = "LipsCoordinates_"+ mode +"_12coor_Digits.txt"
     
         # extracted_frames_path = "LipsFrames\\"
         videos_path = r"AVSegmentedDataset\Digits" +"\\"+ mode +"\*.mp4" 
@@ -46,7 +46,7 @@ if __name__ == "__main__" :
         for video in videos:
             counter+=1
             name_v = video.split('\\')
-            name_v = name_v[2].split('.')
+            name_v = name_v[3].split('.')
             currentVideo=+1
             cam = cv2.VideoCapture(video) 
             if name_v[0] not in speakerNameDict:
