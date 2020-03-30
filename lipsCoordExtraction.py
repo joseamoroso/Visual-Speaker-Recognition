@@ -18,17 +18,19 @@ from auxiliars.faceDetection import detectFaceOpenCVDnn
 
 
 if __name__ == "__main__" :
-    text_filename = "AV_lips_coordinates_v0.txt"
-    extracted_frames_path = "LipsFrames/"
-    videos_path = "AVSegmentedDataset/*.mp4" 
+    text_filename = "LipsCoordinates_Digits_12coor_Normal.txt"
+    datasetMode = "Normal"
+    
+    # extracted_frames_path = "LipsFrames\\"
+    videos_path = "AVSegmentedDataset\Digits\\" +datasetMode +"\*.mp4" 
 
     videos = glob.glob(videos_path)
     # Read the video from specified path 
     currentVideo = 0
     detector = dlib.get_frontal_face_detector()
-    predictor = dlib.shape_predictor("modelsFaceRecognition/shape_predictor_68_face_landmarks.dat")
-    modelFile = "modelsFaceRecognition/opencv_face_detector_uint8.pb"
-    configFile = "modelsFaceRecognition/opencv_face_detector.pbtxt"
+    predictor = dlib.shape_predictor("modelsFaceRecognition\shape_predictor_68_face_landmarks.dat")
+    modelFile = "modelsFaceRecognition\opencv_face_detector_uint8.pb"
+    configFile = "modelsFaceRecognition\opencv_face_detector.pbtxt"
     net = cv2.dnn.readNetFromTensorflow(modelFile, configFile)
     conf_threshold = 0.7
     speakerNameList = []
@@ -41,21 +43,21 @@ if __name__ == "__main__" :
     counter=0   
     for video in videos:
         counter+=1
-        name_v = video.split('/')
-        name_v = name_v[1].split('.')
+        name_v = video.split('\\')
+        name_v = name_v[2].split('.')
         currentVideo=+1
         cam = cv2.VideoCapture(video) 
         if name_v[0] not in speakerNameDict:
             speakerNameList.append(name_v[0])
             speakerNameDict[name_v[0]]={}
-        try:         
-            # creating a folder named data 
-            if not os.path.exists(extracted_frames_path): 
-                os.makedirs(extracted_frames_path) 
+        # try:         
+        #     # creating a folder named data 
+        #     if not os.path.exists(extracted_frames_path): 
+        #         os.makedirs(extracted_frames_path) 
           
-        # if not created then raise error 
-        except OSError: 
-            print ('Error: Creating directory of video_frames') 
+        # # if not created then raise error 
+        # except OSError: 
+        #     print ('Error: Creating directory of video_frames') 
           
         # frame 
         currentframe = 0
@@ -68,11 +70,10 @@ if __name__ == "__main__" :
             if ret:
 
                 # if video is still left continue creating images
-                if not os.path.exists(extracted_frames_path +name_v[0]): 
-                    os.makedirs(extracted_frames_path+name_v[0]) 
-                name = extracted_frames_path + name_v[0]+'/'+name_v[0]+'_' +str(currentframe) + '.jpg'
-                #Se invierte la imagen ya que en el video se muestra al reves
-                #frame = cv2.flip(frame, 0);
+                # if not os.path.exists(extracted_frames_path +name_v[0]): 
+                #     os.makedirs(extracted_frames_path+name_v[0]) 
+                # name = extracted_frames_path + name_v[0]+'\\'+name_v[0]+'_' +str(currentframe) + '.jpg'
+
                 #Deteccion del rostro usando la red definida previamente
                 outOpencvDnn, bboxes = detectFaceOpenCVDnn(net,frame)
                 #Recorte del rostro de la imagen original
@@ -82,11 +83,11 @@ if __name__ == "__main__" :
                 #roi = lips_segm_geomtric(f_image)
                 roi,shape = lips_segm_HOG(f_image,predictor)
                 speakerNameDict[name_v[0]][name_v[0]+'_' +str(currentframe)]=shape.tolist()
-                print ('Creating...' + name)
+                # print ('Creating...' + name)
                 print(str(counter) + ' of ' + str(len(videos)) + '\n')
                 
                 
-                cv2.imwrite(name, roi)
+                # cv2.imwrite(name, roi)
 
               
                 currentframe += 1
