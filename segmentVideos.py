@@ -31,7 +31,7 @@ def cut_video(input_path, output_path, start, end):
     
 modes = ["Normal","Silent","Whispered"]
 
-path = "AVOriginalDataset\Digits\*" 
+path = "AVOriginalDataset\Phrases\*" 
 video_folders = glob.glob(path)
 for video_folder in video_folders:
     v_path = glob.glob(video_folder+"\*.mp4")
@@ -52,14 +52,17 @@ for video_folder in video_folders:
                     utterance = data.iloc[i][4]
                 
                 if "C01" in v_path[0]:
-                    out_string_f = r"AVSegmentedDataset\Digits\Normal\\"+ out_string + utterance + ".mp4"
+                    out_string_f = r"AVSegmentedDataset\Phrases\Normal\\"+ out_string + utterance + ".mp4"
                 
                 if "C02" in v_path[0]:
-                    out_string_f = "AVSegmentedDataset\\Digits\Whispered\\"+ out_string + utterance + ".mp4"
+                    out_string_f = "AVSegmentedDataset\\Phrases\Whispered\\"+ out_string + utterance + ".mp4"
 
                 if "C03" in v_path[0]:
-                    out_string_f = "AVSegmentedDataset\\Digits\Silent\\"+ out_string + utterance + ".mp4"
-
+                    out_string_f = "AVSegmentedDataset\\Phrases\Silent\\"+ out_string + utterance + ".mp4"
+                
+                if os.path.exists(out_string_f):
+                    print("Already")
+                    continue
                 cut_video(v_path,out_string_f,start,end)
                 print("Video " + out_string + utterance + ".mp4 created \n")
 
@@ -67,7 +70,7 @@ for video_folder in video_folders:
 
 #ELIMINA G AUDIOS
 for mod in modes:                
-    result_video = glob.glob(r"AVSegmentedDataset\\Digits\\"+ mod +"\\*")
+    result_video = glob.glob(r"AVSegmentedDataset\\Phrases\\"+ mod +"\\*")
     for elem in result_video:
         elem2 = elem.split("\\")
         if 'g' in elem2[5]:
