@@ -1,6 +1,6 @@
 import numpy as np
 
-from hmmlearn import hmm
+from hmmlearn import hmmmm
 import json 
 #import matplotlib.pyplot as plt
 
@@ -8,34 +8,9 @@ from featuresProcessing import normalize_coordinates, loop_over_static, derivate
 import pandas as pd
 import sys
 from auxiliars.generateMatrixTransi import genTransMatrix  
+from auxiliars.hmmModelGen import HMMTrainer
 
-# Class to handle all HMM related processing
 
-class HMMTrainer(object):
-    def __init__(self, model_name='GaussianHMM', n_components=3 ,cov_type='diag'):
-        self.model_name = model_name
-        self.n_components = n_components
-        self.cov_type = cov_type
-        self.trans_matrix = genTransMatrix(self.n_components)
-        self.models = []
-
-        if self.model_name == 'GaussianHMM':
-            self.model = hmm.GaussianHMM(n_components=self.n_components,
-                    covariance_type=self.cov_type,
-                    transmat_prior=self.trans_matrix)
-        else:
-            raise TypeError('Invalid model type')
-
-    # X is a 2D numpy array where each row is 13D
-    def train(self, X):
-        np.seterr(all='ignore')
-        self.models.append(self.model.fit(X))
-
-    # Run the model on input data
-    def get_score(self, input_data):
-        return self.model.score(input_data)
-    def predict_model(self, input_data):
-        return self.model.predict(input_data)
     
 ##############################################################################################    
 
@@ -52,11 +27,11 @@ if __name__=='__main__':
       
     keys = []
     for key in normalized.keys():
-        if key[9:] == "p8":
+        if key[9:] == "p0":
             keys.append(key)         
     keys.sort()
 
-    keys_train = [keys[i] for i in range(0,len(keys),5)]      
+    keys_train = [keys[i] for i in range(2,len(keys),5)]      
     keys_test = []
     for key in keys:
         if key not in keys_train:
