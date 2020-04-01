@@ -1,51 +1,28 @@
 import numpy as np
+import time
 
 from hmmlearn import hmm
 import json 
 #import matplotlib.pyplot as plt
 
-from featuresProcessing import normalize_coordinates, loop_over_static, derivate
+from featuresProcessing import normalize_coordinates,normalize_coordinates_2, loop_over_static, derivate
 import pandas as pd
 import sys
-    
+from auxiliars.generateMatrixTransi import genTransMatrix 
+from auxiliars.hmmModelGen import HMMTrainer
 
-# Class to handle all HMM related processing
-class HMMTrainer(object):
-    def __init__(self, model_name='GaussianHMM', n_components=2, cov_type='full', n_iter=1):
-        self.model_name = model_name
-        self.n_components = n_components
-        self.cov_type = cov_type
-        self.n_iter = n_iter
-        self.models = []
 
-        if self.model_name == 'GaussianHMM':
-            self.model = hmm.GaussianHMM(n_components=self.n_components,
-                    covariance_type=self.cov_type, n_iter=self.n_iter)
-        else:
-            raise TypeError('Invalid model type')
-
-    # X is a 2D numpy array where each row is 13D
-    def train(self, X):
-        np.seterr(all='ignore')
-        self.models.append(self.model.fit(X))
-
-    # Run the model on input data
-    def get_score(self, input_data):
-        return self.model.score(input_data)
-    def predict_model(self, input_data):
-        return self.model.predict(input_data)
-    
 ##############################################################################################    
 
 if __name__=='__main__':
     
-    file_name = "results_test_1_normalized.txt"
+    file_name = "results_test_2_normalized_silent.txt"
 
-    f=open("AV_lips_coordinates_v0.txt", "r")    
+    f=open("LipsCoordinates_Silent_12coor_Phrases.txt", "r")    
     contents = json.loads(f.read())
     f.close()
     #diccionario con fshape para cada frame de todos los videos
-    normalized = normalize_coordinates(contents)
+    normalized = normalize_coordinates_2(contents)
     # normalized = derivate(contents) #comentar
     # normalized = contents
     
@@ -73,56 +50,55 @@ if __name__=='__main__':
             print('\n'+50*'-'+'\n'+'Fold '+str(fold+1)+' of 5, utterance: '+ utter_key + '\n'+50*'-'+'\n')
             ################################################ USING STATIC ########################################
             for i in range (2,10):
-                for j in range(1,10):
-                    try:
-                        hmm_models = []
+                try:
+                    hmm_models = []
+                
+                    ########## Training ################3   
+                    t_c = 0
+                    for key in keys_train:
+                        t_c+=1 
+                        X = loop_over_static(normalized,key)          
+                        # hmm_trainer = HMMTrainer()
+                        hmm_trainer = HMMTrainer(n_components=i)
+                #                    print("\n Entrenando... ")
+                #                    print(str(t_c) + " de " + str(len(keys_train)) )
                     
-                        ########## Training ################3   
-                        t_c = 0
-                        for key in keys_train:
-                            t_c+=1 
-                            X = loop_over_static(normalized,key)          
-                            # hmm_trainer = HMMTrainer()
-                            hmm_trainer = HMMTrainer(n_components=i, n_iter=j)
-                    #                    print("\n Entrenando... ")
-                    #                    print(str(t_c) + " de " + str(len(keys_train)) )
-                        
-                            hmm_trainer.train(X)
-                            hmm_models.append((hmm_trainer, key))
-                            hmm_trainer = None
-                                            
-                        ########### Testing #################
-                        test_count = 0
-                        for key in keys_test:
-                            X = loop_over_static(normalized,key)
-                            max_score = [float("-inf")]
-                            output_label = None
-                            model_count = 1
-                            for model in hmm_models:
-                                hmm_model, label = model
-                                score = hmm_model.get_score(X)
-                                model_count+=1
-                        #        print(key,label,score)
-                                if score > max_score:
-                                    max_score = score
-                                    output_label = label
-                        
-                            key = key.split('_')
-                            output = output_label.split('_')
-                            if(key[0] == output[0]):
-                                test_count+=1
-                    #                        print( "\nTrue:", key[0])
-                    #                        print("Predicted:", output[0])
-                    #                        print('-'*50)
-                    #                
-                        result_t = test_count/len(keys_test)
-                        total_results.append(result_t)
-                        print(str((i,j))+": Accuracy: " + str(result_t*100) + " %")
+                        hmm_trainer.train(X)
+                        hmm_models.append((hmm_trainer, key))
+                        hmm_trainer = None
+                                        
+                    ########### Testing #################
+                    test_count = 0
+                    for key in keys_test:
+                        X = loop_over_static(normalized,key)
+                        max_score = [float("-inf")]
+                        output_label = None
+                        model_count = 1
+                        for model in hmm_models:
+                            hmm_model, label = model
+                            score = hmm_model.get_score(X)
+                            model_count+=1
+                    #        print(key,label,score)
+                            if score > max_score:
+                                max_score = score
+                                output_label = label
                     
-                        results[str((i,j))] = result_t*100
-                    except:
-                        print("ERROR for: " + str((i,j)))
-                        continue
+                        key = key.split('_')
+                        output = output_label.split('_')
+                        if(key[0] == output[0]):
+                            test_count+=1
+                #                        print( "\nTrue:", key[0])
+                #                        print("Predicted:", output[0])
+                #                        print('-'*50)
+                #                
+                    result_t = test_count/len(keys_test)
+                    total_results.append(result_t)
+                    print(str(i)+": Accuracy: " + str(result_t*100) + " %")
+                
+                    results[str(i)] = result_t*100
+                except:
+                    print("ERROR for: " + str(i))
+                    continue
             fold_result[str(fold)]=results
         utter_result[utter_key] = fold_result
     
