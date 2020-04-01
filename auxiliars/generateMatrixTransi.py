@@ -2,7 +2,7 @@ import numpy as np
 
 def genTransMatrix(states):
     startprobPrior = np.zeros(states,dtype=np.float)
-    startprobPrior[0]= 1   
+    startprobPrior[0]= 1.0   
     
     transmatPrior = np.zeros((states, states),dtype=np.float) 
     tmp_prob = 0.5
@@ -15,4 +15,4 @@ def genTransMatrix(states):
     
     transmatPrior[states-1][states-1]=1.0
     
-    return transmatPrior
+    return transmatPrior,startprobPrior
