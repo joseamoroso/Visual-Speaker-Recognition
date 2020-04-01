@@ -7,17 +7,17 @@ from auxiliars.generateMatrixTransi import genTransMatrix
 # Class to handle all HMM related processing
 
 class HMMTrainer(object):
-    def __init__(self, model_name='GaussianHMM', n_components=3 ,cov_type='diag'):
+    def __init__(self, model_name='GaussianHMM', n_components=4 ,cov_type='diag'):
         self.model_name = model_name
         self.n_components = n_components
         self.cov_type = cov_type
-        self.trans_matrix = genTransMatrix(self.n_components)
+        self.trans_matrix,self.prior_prob = genTransMatrix(self.n_components)
         self.models = []
 
         if self.model_name == 'GaussianHMM':
             self.model = hmm.GaussianHMM(n_components=self.n_components,
-                    covariance_type=self.cov_type,
-                    transmat_prior=self.trans_matrix)
+                    covariance_type=self.cov_type,init_params="cm", params="cmt",
+                    transmat_prior=self.trans_matrix,startprob_prior =self.prior_prob)
         else:
             raise TypeError('Invalid model type')
 
