@@ -4,23 +4,25 @@ from hmmlearn import hmm
 import json 
 #import matplotlib.pyplot as plt
 
-from featuresProcessing import normalize_coordinates, loop_over_static, derivate
+from featuresProcessing import normalize_coordinates, loop_over_static, derivate, normalize_coordinates_2
 import pandas as pd
 import sys
-    
+from auxiliars.generateMatrixTransi import genTransMatrix  
 
 # Class to handle all HMM related processing
+
 class HMMTrainer(object):
-    def __init__(self, model_name='GaussianHMM', n_components=2, cov_type='full', n_iter=1):
+    def __init__(self, model_name='GaussianHMM', n_components=3 ,cov_type='diag'):
         self.model_name = model_name
         self.n_components = n_components
         self.cov_type = cov_type
-        self.n_iter = n_iter
+        self.trans_matrix = genTransMatrix(self.n_components)
         self.models = []
 
         if self.model_name == 'GaussianHMM':
             self.model = hmm.GaussianHMM(n_components=self.n_components,
-                    covariance_type=self.cov_type, n_iter=self.n_iter)
+                    covariance_type=self.cov_type,
+                    transmat_prior=self.trans_matrix)
         else:
             raise TypeError('Invalid model type')
 
@@ -39,11 +41,11 @@ class HMMTrainer(object):
 
 if __name__=='__main__':
 
-    f=open("exp1Results\AV_lips_coordinates_v0.txt", "r")    
+    f=open("LipsCoordinates_Silent_12coor_Phrases.txt", "r")    
     contents = json.loads(f.read())
     f.close()
     #diccionario con fshape para cada frame de todos los videos
-    normalized = normalize_coordinates(contents)
+    normalized = normalize_coordinates_2(contents)
     # normalized = derivate(contents) #comentar
     # normalized = contents
     
@@ -69,7 +71,7 @@ if __name__=='__main__':
         t_c+=1 
         X = loop_over_static(normalized,key)          
         # hmm_trainer = HMMTrainer()
-        hmm_trainer = HMMTrainer()
+        hmm_trainer = HMMTrainer(n_components=4)
 #                    print("\n Entrenando... ")
 #                    print(str(t_c) + " de " + str(len(keys_train)) )
     
@@ -88,7 +90,7 @@ if __name__=='__main__':
             hmm_model, label = model
             score = hmm_model.get_score(X)
             model_count+=1
-    #        print(key,label,score)
+            # print(key,label,score)
             if score > max_score:
                 max_score = score
                 output_label = label
@@ -97,11 +99,13 @@ if __name__=='__main__':
         output = output_label.split('_')
         if(key[0] == output[0]):
             test_count+=1
-#                        print( "\nTrue:", key[0])
-#                        print("Predicted:", output[0])
-#                        print('-'*50)
-#                
+        # print( "\nTrue:", key[0])
+        # print("Predicted:", output[0])
+        # print('-'*50)
+            
     result_t = test_count/len(keys_test)
+    print("The accuracy is: " + str(result_t))
+    
 
 
 
