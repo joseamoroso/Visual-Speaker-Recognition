@@ -1,6 +1,6 @@
 import numpy as np
 
-from hmmlearn import hmmmm
+from hmmlearn import hmm
 import json 
 #import matplotlib.pyplot as plt
 
@@ -16,7 +16,7 @@ from auxiliars.hmmModelGen import HMMTrainer
 
 if __name__=='__main__':
 
-    f=open("LipsCoordinates_Silent_12coor_Phrases.txt", "r")    
+    f=open("LipsCoordinates_Normal_12coor_Phrases.txt", "r")    
     contents = json.loads(f.read())
     f.close()
     #diccionario con fshape para cada frame de todos los videos
@@ -27,7 +27,7 @@ if __name__=='__main__':
       
     keys = []
     for key in normalized.keys():
-        if key[9:] == "p0":
+        if key[9:] == "p1":
             keys.append(key)         
     keys.sort()
 
