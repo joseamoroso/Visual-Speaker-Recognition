@@ -21,10 +21,10 @@ if __name__ == "__main__" :
     datasetMode = ["Normal","Silent","Whispered"]
     for mode in datasetMode:
 
-        text_filename = "LipsCoordinates_"+ mode +"_12coor_Digits.txt"
+        text_filename = "LipsCoordinates_"+ mode +"_12coor_Phrases.txt"
     
         # extracted_frames_path = "LipsFrames\\"
-        videos_path = r"AVSegmentedDataset\Digits" +"\\"+ mode +"\*.mp4" 
+        videos_path = r"AVSegmentedDataset\Phrases" +"\\"+ mode +"\*.mp4" 
     
         videos = glob.glob(videos_path)
         # Read the video from specified path 
