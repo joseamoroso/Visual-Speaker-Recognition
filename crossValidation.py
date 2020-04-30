@@ -7,7 +7,7 @@ Created on Sun Mar 29 16:11:30 2020
 import json
 import numpy as np
 
-f=open("results_test_2_normalized_normal.txt", "r")    
+f=open("results_X_no_normalized_Normal_24_ViolaJ.txt", "r")    
 results = json.loads(f.read())
 f.close()
 
@@ -24,6 +24,7 @@ for keyL in keysList:
         crossResult[utter] = (sum(crossResult[utter])/len(crossResult[utter]), np.std(crossResult[utter]))
     listResults.append(crossResult)
     
+print(listResults)
 # f=open("crossExp3.txt", "+w")    
 # cross_json = json.dumps(listResults)
 # f.write(cross_json)
