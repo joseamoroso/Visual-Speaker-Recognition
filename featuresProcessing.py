@@ -68,6 +68,7 @@ def normalize_coordinates(coord_list):
                 normalize_coord[speaker][speaker_frame].append((xi_prime,yi_prime))
     return normalize_coord
 
+#Added new features such as scale, centroid and rotation
 def normalize_coordinates_2(coord_list):
     normalize_coord = {}
     for speaker in coord_list:
@@ -127,7 +128,7 @@ def derivate (coord_list):
 
 
 
-def loop_over_static(norm_dict,key):
+def loop_over_static(norm_dict,key,mSize=28):
     frame_features = norm_dict[key] #Lista de diccionarios de frames
     f_temp_shape_dict = list(frame_features)    
     X = np.array([])
@@ -141,7 +142,7 @@ def loop_over_static(norm_dict,key):
             X = np.append(X,new_features_list,axis=0)
         new_features_list = []
 
-    return X.reshape(len(f_temp_shape_dict),28)
+    return X.reshape(len(f_temp_shape_dict),mSize)
         
     
     
@@ -152,8 +153,8 @@ def loop_over_static(norm_dict,key):
 
 ############################################################################
     
-#Prueba
-# f=open("AV_lips_coordinates_v0.txt", "r")    
+# Prueba
+# f=open("LipsCoordinates_Normal_20coor_Phrases_ViolaJ.txt", "r")    
 # contents = json.loads(f.read())
 # f.close()
 
@@ -161,23 +162,52 @@ def loop_over_static(norm_dict,key):
 # normalized = normalize_coordinates(contents)
 # derivated = derivate(normalized)
 
-# example = normalized['S001_R01_p0']['S001_R01_p0_10']
-# example_X = loop_over_static(normalized,'S001_R01_p0')
+# example = normalized['S001_R01_p0']['S001_R01_p0_0']
+# # example_X = loop_over_static(normalized,'S001_R01_p0',)
+
+
+# x = []
+# y = []
+# z = []
+# a = []
+
+# for coor in range(0,len(example)-8):
+#     x.append(example[coor][0])
+#     y.append(example[coor][1])
+    
+# x.append(x[0])
+# y.append(y[0])
+
+# for coor in range(len(example)-8,len(example)):
+#     a.append(example[coor][0])
+#     z.append(example[coor][1])
+    
+# z.append(z[0])
+# a.append(a[0])
 
 
 
-#x = []
-#y = []
-#
-#for coor in example:
-#    x.append(coor[0])
-#    y.append(coor[1])
-#    
-#x.append(x[0])
-#y.append(y[0])
-#
-#    
-#plt.plot(x, y)
-#plt.show()
+    
+# fig = plt.figure()
+# ax = fig.add_subplot()
+
+# plt.axis('equal') 
+# plt.plot(x, y,'ob-')
+# plt.plot(a, z,'ob-')
+
+
+# # ax.spines['left'].set_position('center')
+# # ax.spines['bottom'].set_position('center')
+
+# # ax.xaxis.set_ticks_position('bottom')
+# # ax.yaxis.set_ticks_position('left')
+
+# # ax.spines['right'].set_color('none')
+# # ax.spines['top'].set_color('none')
+# plt.xlabel('Coordinate in axis x')
+# plt.ylabel('Coordinate in axis y')
+# # plt.title('A sine wave with a gap of NaNs between 0.4 and 0.6')
+
+# plt.show()
 
     
