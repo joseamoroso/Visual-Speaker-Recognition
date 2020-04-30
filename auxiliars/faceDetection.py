@@ -26,3 +26,19 @@ def detectFaceOpenCVDnn(net, frame):
             cv2.rectangle(frameOpencvDnn, (x1, y1), (x2, y2), (0, 255, 0), int(round(frameHeight/150)), 8)
     return frameOpencvDnn, bboxes# -*- coding: utf-8 -*-
 
+def detectFaceViolaJ(frame):
+    grayscale_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    face_cascade = cv2.CascadeClassifier('D:/Tesis/visualspeakerecognition/auxiliars/haarcascade_frontalface_alt.xml')
+    detected_faces = face_cascade.detectMultiScale(grayscale_image)
+    for (column, row, width, height) in detected_faces:
+        new_Frame = frame[row:row+height,column:column+width]
+    return new_Frame
+
+# img = cv2.imread("C:/Users/josel/Desktop/imagen1.png")
+# a = detectFaceViolaJ(img)
+# cv2.imwrite("cara1.jpg",a)
+
+
+
+    
+
