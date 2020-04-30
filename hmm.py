@@ -16,9 +16,10 @@ from auxiliars.hmmModelGen import HMMTrainer
 
 if __name__=='__main__':
 
-    f=open("LipsCoordinates_Normal_12coor_Phrases.txt", "r")    
+    f=open("LipsCoordinates_Normal_20coor_Phrases_ViolaJ.txt", "r")    
     contents = json.loads(f.read())
     f.close()
+    mSize = 44
     #diccionario con fshape para cada frame de todos los videos
     normalized = normalize_coordinates_2(contents)
     # normalized = derivate(contents) #comentar
@@ -27,11 +28,11 @@ if __name__=='__main__':
       
     keys = []
     for key in normalized.keys():
-        if key[9:] == "p1":
+        if key[9:] == "p0":
             keys.append(key)         
     keys.sort()
 
-    keys_train = [keys[i] for i in range(2,len(keys),5)]      
+    keys_train = [keys[i] for i in range(0,len(keys),5)]      
     keys_test = []
     for key in keys:
         if key not in keys_train:
@@ -44,7 +45,7 @@ if __name__=='__main__':
     t_c = 0
     for key in keys_train:
         t_c+=1 
-        X = loop_over_static(normalized,key)          
+        X = loop_over_static(normalized,key,mSize)          
         # hmm_trainer = HMMTrainer()
         hmm_trainer = HMMTrainer(n_components=4)
 #                    print("\n Entrenando... ")
@@ -57,7 +58,7 @@ if __name__=='__main__':
     ########### Testing #################
     test_count = 0
     for key in keys_test:
-        X = loop_over_static(normalized,key)
+        X = loop_over_static(normalized,key,mSize)
         max_score = [float("-inf")]
         output_label = None
         model_count = 1
