@@ -1,24 +1,27 @@
 import numpy as np
 import time
 
-from hmmlearn import hmm
+# from hmmlearn import hmm
 import json 
 #import matplotlib.pyplot as plt
 
 from featuresProcessing import normalize_coordinates,normalize_coordinates_2, loop_over_static, derivate
-import pandas as pd
-import sys
-from auxiliars.generateMatrixTransi import genTransMatrix 
+# import pandas as pd
+# import sys
+# from auxiliars.generateMatrixTransi import genTransMatrix 
 from auxiliars.hmmModelGen import HMMTrainer
 
 
 ##############################################################################################    
 
 if __name__=='__main__':
+    COORDINATES=20
+    STATES=5
     
-    file_name = "results_test_2_normalized_normal.txt"
-
-    f=open("LipsCoordinates_Normal_12coor_Phrases.txt", "r")    
+    file_name = "results_Xnorm_inner_Silent_Digits_ViolaJ.txt"
+    #Size of normalizaed matrxi: coordinates * 2 + scale,rotation,cx,cy
+    mSize = (COORDINATES*2) + 4
+    f=open("LipsCoordinates_Silent_20coor_Digits_ViolaJ.txt", "r")    
     contents = json.loads(f.read())
     f.close()
     #diccionario con fshape para cada frame de todos los videos
@@ -49,14 +52,14 @@ if __name__=='__main__':
             results={}
             print('\n'+50*'-'+'\n'+'Fold '+str(fold+1)+' of 5, utterance: '+ utter_key + '\n'+50*'-'+'\n')
             ################################################ USING STATIC ########################################
-            for i in range (2,6):
+            for i in range (2,STATES+1):
                 hmm_models = []
             
                 ########## Training ################3   
                 t_c = 0
                 for key in keys_train:
                     t_c+=1 
-                    X = loop_over_static(normalized,key)          
+                    X = loop_over_static(normalized,key,mSize)          
                     # hmm_trainer = HMMTrainer()
                     hmm_trainer = HMMTrainer(n_components=i)
             #                    print("\n Entrenando... ")
@@ -69,7 +72,7 @@ if __name__=='__main__':
                 ########### Testing #################
                 test_count = 0
                 for key in keys_test:
-                    X = loop_over_static(normalized,key)
+                    X = loop_over_static(normalized,key,mSize)
                     max_score = [float("-inf")]
                     output_label = None
                     model_count = 1
