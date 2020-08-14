@@ -1,3 +1,4 @@
+
 # Visual Speaker Recognition biometric 
 
 This work presents a biometric system for speaker recognition using visual-only speech features. 
@@ -20,7 +21,14 @@ The libraries used in all programs are listed in `requirements.txt` and can be i
 |   └──Digits
 |	├── **/*			#Folders containing .mp4 and csv timestamps
 ├── AVSegmentedDataset			#Folder that contains the AV dataset, segmented by utterances.
-│   ├── *.mp4			
+|	├── Digits
+|	|	├── Normal		# Folders containing .mp4 segment by utterance and speech mode
+|	|	├── Whispered
+|	|	├── Silent
+|	├── Phrases
+|	|	├── Normal
+|	|	├── Whispered
+|	|	├── Silent
 ├── LipsFrames				#Folder containing all lips images generated.
 |   ├──	**/*.jpg			
 ├── modelsFaceRecognition		#Contains neccesary files for computer vision functions. (if not included, could be found on internet)
@@ -37,10 +45,19 @@ The libraries used in all programs are listed in `requirements.txt` and can be i
 └── segmentVideos.py			#Script to segment original videos into utterances ussing CSV files timestamps in each video.
 ```
 ##  Videos segmentation
+First we run the `segmentVideos.py`, which will generate the videos separated by each speech mode and specific utterance. This script uses the timestamp provided by the dataset to segment each utterance. 
+
+> Note: The script will generate only the segmentation for phrases, to apply segmentation for digits user should change the paths used in the script.
 
 ##  Lips coordinates extraction
 
+Now we execute:
+
+    python3 lipsCoordExtraction.py
+  With this, we generate files containing the coordinates of the lips in each frame for all videos. To specify number of coordinates, type of face location algorithm and dataset, we need to change commented parts in code.
+
 ## Features processing (lips coordinates)
+Function used for feature processing in this case, normalization of lip coordinates can be found in `featuresProcessing.py`, these function are used directly when required in the step of generating HMMs.
 
 ## Generate HMMs from features
 
