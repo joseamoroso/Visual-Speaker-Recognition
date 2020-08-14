@@ -14,7 +14,7 @@ import json
 from auxiliars.lipsExtraction import  lips_segm_HOG
 from auxiliars.faceDetection import detectFaceOpenCVDnn,detectFaceViolaJ
 
-#change to 12
+#NUMBER OF COORDINATES TO TRACK ON LIPS
 NCOORDINATES = 12
 
 if __name__ == "__main__" :
@@ -28,7 +28,8 @@ if __name__ == "__main__" :
 
         text_filename = "LipsCoordinates_"+ mode +"_12coor_Phrases_ViolaJ.txt"
     
-        # extracted_frames_path = "LipsFrames\\"
+        # CHANGE "Phrases to Digits to work with Digits dataset"
+        
         videos_path = r"AVSegmentedDataset\Phrases" +"\\"+ mode +"\*.mp4" 
         videos = glob.glob(videos_path)
         currentVideo = 0
