@@ -9,6 +9,9 @@ import pandas as pd
 import sys
 from auxiliars.generateMatrixTransi import genTransMatrix  
 from auxiliars.hmmModelGen import HMMTrainer
+import matplotlib.pyplot as plt 
+from sklearn.metrics import confusion_matrix,classification_report,ConfusionMatrixDisplay
+import scikitplot as skplt
 
 
     
@@ -24,13 +27,18 @@ if __name__=='__main__':
     normalized = normalize_coordinates_2(contents)
     # normalized = derivate(contents) #comentar
     # normalized = contents
-    
+    y_true = []
+    y_pred = []
       
     keys = []
     for key in normalized.keys():
         if key[9:] == "p0":
             keys.append(key)         
     keys.sort()
+    #############################
+
+    
+    #############################
 
     keys_train = [keys[i] for i in range(0,len(keys),5)]      
     keys_test = []
@@ -46,7 +54,6 @@ if __name__=='__main__':
     for key in keys_train:
         t_c+=1 
         X = loop_over_static(normalized,key,mSize)          
-        # hmm_trainer = HMMTrainer()
         hmm_trainer = HMMTrainer(n_components=4)
 #                    print("\n Entrenando... ")
 #                    print(str(t_c) + " de " + str(len(keys_train)) )
@@ -64,15 +71,17 @@ if __name__=='__main__':
         model_count = 1
         for model in hmm_models:
             hmm_model, label = model
-            score = hmm_model.get_score(X)
+            # score = hmm_model.get_score(X)
             model_count+=1
-            # print(key,label,score)
+            print(key,label,score)
             if score > max_score:
                 max_score = score
                 output_label = label
     
         key = key.split('_')
         output = output_label.split('_')
+        y_true.append(key[0])
+        y_pred.append(output[0])
         if(key[0] == output[0]):
             test_count+=1
         # print( "\nTrue:", key[0])
@@ -81,14 +90,89 @@ if __name__=='__main__':
             
     result_t = test_count/len(keys_test)
     print("The accuracy is: " + str(result_t))
-    
-
-
-
+    conf =confusion_matrix(y_true, y_pred) 
+    print(classification_report(y_true,y_pred,digits=3))
  
+    
+    
+    ##############################Print confusion matrix
+    # skplt.metrics.plot_confusion_matrix(
+    # y_true, 
+    # y_pred,
+    # figsize=(20,20))
 
-    # test_1_results =  {'(2, 1)': 10.897435897435898, '(2, 2)': 6.41025641025641, '(2, 3)': 7.051282051282051, '(2, 4)': 7.6923076923076925, '(2, 5)': 7.6923076923076925, '(2, 6)': 7.6923076923076925, '(2, 7)': 8.974358974358974, '(2, 8)': 6.41025641025641, '(2, 9)': 6.41025641025641, '(3, 1)': 9.615384615384617, '(3, 2)': 4.487179487179487, '(3, 3)': 4.487179487179487, '(3, 4)': 2.564102564102564, '(3, 5)': 2.564102564102564, '(3, 6)': 1.9230769230769231, '(3, 7)': 2.564102564102564, '(3, 8)': 1.9230769230769231, '(3, 9)': 2.564102564102564, '(4, 1)': 9.615384615384617, '(4, 2)': 4.487179487179487, '(4, 3)': 3.205128205128205, '(4, 4)': 2.564102564102564, '(4, 5)': 2.564102564102564, '(4, 6)': 0.641025641025641, '(4, 7)': 2.564102564102564, '(4, 8)': 2.564102564102564, '(4, 9)': 2.564102564102564, '(5, 1)': 9.615384615384617, '(5, 2)': 5.128205128205128, '(5, 3)': 3.8461538461538463, '(5, 4)': 3.205128205128205, '(5, 5)': 2.564102564102564, '(5, 6)': 2.564102564102564, '(5, 7)': 2.564102564102564, '(5, 8)': 2.564102564102564, '(5, 9)': 2.564102564102564, '(6, 1)': 8.974358974358974, '(6, 2)': 3.205128205128205, '(6, 3)': 3.205128205128205, '(6, 4)': 1.282051282051282, '(6, 5)': 1.282051282051282, '(6, 6)': 1.9230769230769231, '(6, 7)': 1.282051282051282, '(6, 8)': 2.564102564102564, '(6, 9)': 0.641025641025641, '(7, 1)': 9.615384615384617, '(7, 2)': 3.8461538461538463, '(7, 3)': 4.487179487179487, '(7, 4)': 2.564102564102564, '(7, 5)': 2.564102564102564, '(7, 6)': 0.641025641025641, '(7, 7)': 2.564102564102564, '(7, 8)': 1.282051282051282, '(7, 9)': 2.564102564102564, '(8, 1)': 8.974358974358974, '(8, 2)': 4.487179487179487, '(8, 3)': 2.564102564102564, '(8, 4)': 2.564102564102564, '(8, 5)': 2.564102564102564, '(8, 6)': 1.282051282051282, '(8, 8)': 2.564102564102564, '(8, 9)': 0.0, '(9, 1)': 9.615384615384617, '(9, 2)': 4.487179487179487, '(9, 3)': 3.205128205128205, '(9, 4)': 0.0, '(9, 5)': 0.641025641025641, '(9, 6)': 2.564102564102564, '(9, 7)': 2.564102564102564, '(9, 8)': 2.564102564102564, '(9, 9)': 2.564102564102564}
-    # df = pd.DataFrame(test_1_results, index=[0])
+   
+    ##############################  Print scale different users  ###############################
+    # utt="p1"
+    # s1_r1=[]
+    # for frame in normalized["S001_R01_"+utt]:
+    #     s1_r1.append(normalized["S001_R01_"+utt][frame][13][0])
+        
+    # s1_r2=[]
+    # for frame in normalized["S001_R02_"+utt]:
+    #     s1_r2.append(normalized["S001_R02_"+utt][frame][13][0])
+    # s1_r3=[]
+    # for frame in normalized["S001_R03_"+utt]:
+    #     s1_r3.append(normalized["S001_R03_"+utt][frame][13][0])
+    # s1_r4=[]
+    # for frame in normalized["S001_R04_"+utt]:
+    #     s1_r4.append(normalized["S001_R04_"+utt][frame][13][0])
+    # s1_r5=[]
+    # for frame in normalized["S001_R05_"+utt]:
+    #     s1_r5.append(normalized["S001_R05_"+utt][frame][13][0])
+    # s2_r1=[]
+    # for frame in normalized["S021_R01_"+utt]:
+    #     s2_r1.append(normalized["S021_R01_"+utt][frame][13][0])
+    # s3_r1=[]
+    # for frame in normalized["S014_R01_"+utt]:
+    #     s3_r1.append(normalized["S014_R01_"+utt][frame][13][0])
+    # s4_r1=[]
+    # for frame in normalized["S016_R01_"+utt]:
+    #     s4_r1.append(normalized["S016_R01_"+utt][frame][13][0])        
+  
+    # s1_r1=[x / s1_r1[0] for x in s1_r1]
+    # s1_r2=[x / s1_r2[0] for x in s1_r2]
+    # s1_r3=[x / s1_r3[0] for x in s1_r3]
+    # s1_r4=[x / s1_r4[0] for x in s1_r4]
+    # s1_r5=[x / s1_r5[0] for x in s1_r5]
+    # s2_r1=[x / s2_r1[0] for x in s2_r1]
+    # s3_r1=[x / s3_r1[0] for x in s3_r1]
+    # s4_r1=[x / s4_r1[0] for x in s4_r1]
+
+
+    # frames=50
+    # s1_r1=s1_r1[:frames]
+    # s1_r2=s1_r2[:frames]
+    # s1_r3=s1_r3[:frames]
+    # s1_r4=s1_r4[:frames]
+    # s1_r5=s1_r5[:frames]
+    # s2_r1=s2_r1[:frames]
+    # s3_r1=s3_r1[:frames]
+    # s4_r1=s4_r1[:frames]
+
+
+    # plt.ylim(0.8, 1.2)
+
+    # y = np.arange(0,frames)
     
-    # df.to_csv('results_test1_derivates.csv', index = False)
+    # plt.plot( y,s1_r1, label = "Person 1") 
+    # # plt.plot( y,s1_r2, label = "line 2") 
+    # # plt.plot( y,s1_r3, label = "Repetition 2") 
+    # # plt.plot( y,s1_r4, label = "Repetition 3") 
+    # # plt.plot( y,s1_r5, label = "Repetition 4") 
+    # plt.plot( y,s2_r1, label = "Person 2")
+    # plt.plot( y,s3_r1, label = "Person 3") 
+    # plt.plot( y,s4_r1, label = "Person 4") 
+
+    # plt.xlabel('Frame number') 
+    # plt.ylabel('Scale')
     
+    # plt.legend() 
+    # plt.show() 
+
+
+
+      
+
+
+
