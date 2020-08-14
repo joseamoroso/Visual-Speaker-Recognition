@@ -5,12 +5,9 @@ Created on Tue Feb 18 10:18:29 2020
 
 @author: jose
 """
-import json 
 import math
-import matplotlib.pyplot as plt
 import numpy as np
 
-NUM_CORD = 12
 
 
 #Estructura del argumento coor_list:
@@ -73,7 +70,6 @@ def normalize_coordinates_2(coord_list):
     normalize_coord = {}
     for speaker in coord_list:
         normalize_coord[speaker]={}
-        firstFrame = 1
         for speaker_frame in coord_list[speaker]:
             normalize_coord[speaker][speaker_frame] = []
             x_l = coord_list[speaker][speaker_frame][0][0]
@@ -84,14 +80,6 @@ def normalize_coordinates_2(coord_list):
             y_c = (y_l + y_r) / 2
             alpha = math.atan2(y_r-y_l,x_r-x_l)
             s = math.sqrt((((x_l-x_r)**2)+((y_l-y_r)**2))/2)
-            if firstFrame:
-                max_s = s
-                min_xc = x_c
-                min_yc = y_c
-                min_alpha = alpha
-                firstFrame = 0
-                
-            
             for coord in coord_list[speaker][speaker_frame]:
                 xi = coord[0]
                 yi = coord[1]
@@ -99,12 +87,11 @@ def normalize_coordinates_2(coord_list):
                 yi_prime = -(((-(xi - x_c) * math.sin(alpha)) + ((yi - y_c)* math.cos(alpha))) / s)
                 normalize_coord[speaker][speaker_frame].append((xi_prime,yi_prime))
 
-            # normalize_coord[speaker][speaker_frame].append(((x_c -min_xc)/(1-min_xc) ,(y_c -min_yc)/(1-min_yc)))
-            # normalize_coord[speaker][speaker_frame].append((s/max_s,(alpha -min_alpha)/(1-min_alpha)))
             normalize_coord[speaker][speaker_frame].append((x_c ,y_c))
             normalize_coord[speaker][speaker_frame].append((s,alpha))    
             
     return normalize_coord
+
 
 def derivate (coord_list):
     derivated_coord = {}
@@ -152,8 +139,11 @@ def loop_over_static(norm_dict,key,mSize=28):
 
 
 ############################################################################
+# import json 
+# import matplotlib.pyplot as plt
+  
+# # Script para probar resultados
     
-# Prueba
 # f=open("LipsCoordinates_Normal_20coor_Phrases_ViolaJ.txt", "r")    
 # contents = json.loads(f.read())
 # f.close()
