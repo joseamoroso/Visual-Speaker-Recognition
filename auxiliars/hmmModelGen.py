@@ -22,10 +22,12 @@ class HMMTrainer(object):
             raise TypeError('Invalid model type')
 
     # X is a 2D numpy array where each row is 13D
-    def train(self, X):
+    def train(self, X, lengths=0):
         np.seterr(all='ignore')
-        self.models.append(self.model.fit(X))
-
+        if lengths == 0:
+            self.models.append(self.model.fit(X))
+        else:
+            self.models.append(self.model.fit(X,lengths))
     # Run the model on input data
     def get_score(self, input_data):
         return self.model.score(input_data)
